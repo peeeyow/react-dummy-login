@@ -41,16 +41,19 @@ const Login = (props) => {
   });
   const [formIsValid, setFormIsValid] = useState(false);
 
+  const { isValid: isEmailValid } = emailState;
+  const { isValid: isPasswordValid } = passwordState;
+
   useEffect(() => {
     const timerHandler = setTimeout(() => {
-      if (emailState.isValid && passwordState.isValid) {
+      if (isEmailValid && isPasswordValid) {
         setFormIsValid(true);
       }
     }, DEBOUNCE_TIME);
     return () => {
       clearTimeout(timerHandler);
     };
-  }, [emailState.isValid, passwordState.isValid]);
+  }, [isEmailValid, isPasswordValid]);
 
   const emailChangeHandler = (event) => {
     dispatchEmail({ type: "USER_INPUT", value: event.target.value });
@@ -70,7 +73,7 @@ const Login = (props) => {
 
   const submitHandler = (event) => {
     event.preventDefault();
-    props.onLogin(emailState, passwordState);
+    props.onLogin(emailState.value, passwordState.value);
   };
 
   return (
