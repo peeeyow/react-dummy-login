@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import Card from "../UI/Card/Card";
 import classes from "./Login.module.css";
 import Button from "../UI/Button/Button";
+
+const DEBOUNCE_TIME = 500;
 
 const Login = (props) => {
   const [enteredEmail, setEnteredEmail] = useState("");
@@ -11,20 +13,23 @@ const Login = (props) => {
   const [passwordIsValid, setPasswordIsValid] = useState();
   const [formIsValid, setFormIsValid] = useState(false);
 
+  useEffect(() => {
+    const timerHandler = setTimeout(() => {
+      if (enteredEmail.includes("@") && enteredPassword.trim().length > 6) {
+        setFormIsValid(true);
+      }
+    }, DEBOUNCE_TIME);
+    return () => {
+      clearTimeout(timerHandler);
+    };
+  }, [enteredEmail, enteredPassword]);
+
   const emailChangeHandler = (event) => {
     setEnteredEmail(event.target.value);
-
-    setFormIsValid(
-      event.target.value.includes("@") && enteredPassword.trim().length > 6
-    );
   };
 
   const passwordChangeHandler = (event) => {
     setEnteredPassword(event.target.value);
-
-    setFormIsValid(
-      event.target.value.trim().length > 6 && enteredEmail.includes("@")
-    );
   };
 
   const validateEmailHandler = () => {
@@ -38,7 +43,6 @@ const Login = (props) => {
   const submitHandler = (event) => {
     event.preventDefault();
     props.onLogin(enteredEmail, enteredPassword);
-    localStorage.setItem("logged-in", "true");
   };
 
   return (
